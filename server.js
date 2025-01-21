@@ -15,9 +15,9 @@ nunjucks.configure("views", {
 
 
 app.get('/list', async (req, res) => {
-    const fileall = await sequelize.findAll()
+    const books = await Book.findAll()
     res.render('./index.html',{
-        fileall
+        books
     });
     // 데이터 베이스에서 전체 목록 가져오기
     // index.html 페이지 응답 내보내고 전체 목록 값 같이 보내기
@@ -25,17 +25,17 @@ app.get('/list', async (req, res) => {
 
 app.get('/uploads/:filename', async (req, res) => {
     const filename = req.params.filename
-    const viewimage = await sequelize.findOne({where:{filename :`${filename}`}})
-    console.log(viewimage);
+    const viewimage = await Book.findOne({where:{filename :`${filename}`}})
+    const { dataValues } = viewimage
     res.render('./view.html',{
-        viewimage
+        filename: dataValues.filename
     })
     // view.html 응답 보내세요.
 });
 
 app.post('/upload', multerUpload.single('file'), async (req, res) => {
     const {filename ,path} = req.file
-    await sequelize.create({filename:filename, path:path})
+    await Book.create({filename:filename, path:path})
     res.redirect(`/uploads/${filename}`)
     // req.file로 filename, path 꺼냄.
     // 파일 정보를 데이터베이스에 저장.
@@ -44,7 +44,6 @@ app.post('/upload', multerUpload.single('file'), async (req, res) => {
 
 
 app.listen(3000, async() =>{
-    await Book.sync({force :true})
+    await sequelize.sync({ force :true })
     console.log("서버확인");
-
 })
