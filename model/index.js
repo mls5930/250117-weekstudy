@@ -1,12 +1,9 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const config = require('../config')
-const ImageModel = require('./file.model')
 const db = config.db.development;
+const sequelize = new Sequelize(db.database, db.username, db.password, db)
 
-const Book = new Sequelize(db.database, db.username, db.password, db)
-
-const sequelize = ImageModel(Book, DataTypes);
-
+const Book = require('./file.model')(sequelize, DataTypes);
 
 module.exports = {
     Book,
